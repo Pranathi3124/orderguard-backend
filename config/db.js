@@ -1,12 +1,16 @@
 const { Pool } = require("pg");
 require("dotenv").config();
 
+let dbUrl = process.env.DATABASE_URL || "";
+if (dbUrl.includes("?sslmode=require")) {
+  dbUrl = dbUrl.replace("?sslmode=require", "");
+}
+
 // Use PostgreSQL for the Aiven database
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL, // e.g. postgres://user:password@host:port/defaultdb?sslmode=require
+  connectionString: dbUrl,
   ssl: {
-    rejectUnauthorized: false, // Bypass self-signed cert issues
-    ca: undefined
+    rejectUnauthorized: false
   }
 });
 
