@@ -1,4 +1,4 @@
-const User = require("../models/User");
+const db = require("../config/db");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
@@ -6,29 +6,36 @@ const jwt = require("jsonwebtoken");
 exports.register = async (req, res) => {
   const { username, password } = req.body;
 
-  const hashedPassword = await bcrypt.hash(password, 10);
-
-  const user = new User({
-    username,
-    password: hashedPassword
-  });
-
-  await user.save();
-
-  res.send("User registered ✅");
+  try {
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const query = "INSERT INTO users (username, password) VALUES (?, ?)";
+    
+    db.query(query, [username, hashedPassword], (err, results) => {
+      if (err) {
+        return res.status(500).send("Error registering user: " + err.message);
+      }
+      res.send("User registered ✅");
+    });
+  } catch (error) {
+    res.status(500).send("Server error");
+  }
 };
 
 // LOGIN
 exports.login = async (req, res) => {
   const { username, password } = req.body;
 
-  const user = await User.findOne({ username });
-  if (!user) return res.status(400).send("User not found ❌");
+  const query = "SELECT * FROM users WHERE username = ?";
+  db.query(query, [username], async (err, results) => {
+    if (err) return res.status(500).send("Server error");
+    
+    if (results.length === 0) return res.status(400).send("User not found ❌");
 
-  const isMatch = await bcrypt.compare(password, user.password);
-  if (!isMatch) return res.status(400).send("Invalid password ❌");
+    const user = results[0];
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) return res.status(400).send("Invalid password ❌");
 
-  const token = jwt.sign({ id: user._id }, "secret123");
-
-  res.json({ token });
+    const token = jwt.sign({ id: user.id }, "secret123");
+    res.json({ token });
+  });
 };

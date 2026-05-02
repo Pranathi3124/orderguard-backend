@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OrderGuard Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome to OrderGuard</h1>
+        <p id="welcomeMessage">Please log in to manage your inventory and orders.</p>
+        
+        <div id="authLinks">
+            <a href="login.html" class="btn">Login</a>
+            <a href="signup.html" class="btn">Sign Up</a>
+        </div>
+
+        <div id="dashboard" style="display: none;">
+            <h2>Dashboard</h2>
+            <button onclick="logout()" class="btn btn-danger">Logout</button>
+            <!-- Add functionality for managing data here -->
+            <p>You can now manage your data securely via the API.</p>
+        </div>
+    </div>
+    
+    <script src="script.js"></script>
+    <script>
+        window.onload = () => {
+            const token = localStorage.getItem('token');
+            if (token) {
+                document.getElementById('authLinks').style.display = 'none';
+                document.getElementById('dashboard').style.display = 'block';
+                document.getElementById('welcomeMessage').innerText = 'Welcome back!';
+            }
+        };
+    </script>
+</body>
+</html>
