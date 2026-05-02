@@ -5,7 +5,8 @@ require("dotenv").config();
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL, // e.g. postgres://user:password@host:port/defaultdb?sslmode=require
   ssl: {
-    rejectUnauthorized: false // required for many cloud db providers
+    rejectUnauthorized: false, // Bypass self-signed cert issues
+    ca: undefined
   }
 });
 
