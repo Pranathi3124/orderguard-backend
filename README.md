@@ -7,16 +7,17 @@ A robust backend system for OrderGuard, featuring a fully functional user authen
 - **User Authentication:** Secure signup and login using `bcryptjs` for password hashing and `jsonwebtoken` for secure sessions.
 - **Frontend Dashboard:** A simple, interactive frontend built with HTML, CSS, and Vanilla JavaScript to interact with the backend APIs.
 - **Database Integration:** 
-  - **MySQL:** Stores and manages user credentials securely. The `users` table is automatically created upon starting the server.
+  - **PostgreSQL (Cloud Database):** Stores and manages user credentials securely. The `users` table is automatically created upon starting the server.
   - **MongoDB:** Connected via Mongoose for handling complex order and inventory schemas.
+- **Serverless Ready:** Configured to deploy out-of-the-box on platforms like **Vercel**.
 - **RESTful API:** Well-structured routes for authentication (`/auth`), orders (`/order`), and inventory (`/inventory`).
 
 ## Prerequisites
 
 Before you begin, ensure you have the following installed:
 - [Node.js](https://nodejs.org/) (v14 or higher)
-- [MySQL](https://www.mysql.com/) server running locally or remotely
-- [MongoDB](https://www.mongodb.com/) running locally (port 27017) or a MongoDB Atlas URI
+- A **PostgreSQL** connection string (e.g., Aiven, Neon, Render)
+- A **MongoDB** connection string (e.g., MongoDB Atlas)
 
 ## Getting Started
 
@@ -32,34 +33,33 @@ Before you begin, ensure you have the following installed:
    ```
 
 3. **Configure Environment Variables:**
-   Create a `.env` file in the root directory and add your MySQL database credentials:
+   Create a `.env` file in the root directory and add your cloud database URIs:
    ```env
    PORT=5000
-   DB_HOST=localhost
-   DB_USER=root
-   DB_PASSWORD=your_mysql_password
-   DB_NAME=orderguard
+   DATABASE_URL=postgres://user:password@host:port/defaultdb
+   MONGO_URI=mongodb+srv://admin:pass@cluster...
    ```
+   *(Note: The `users` table will automatically generate when the server connects successfully).*
 
-4. **Set Up the Database:**
-   Ensure your MySQL server is running and create the `orderguard` database:
-   ```sql
-   CREATE DATABASE orderguard;
-   ```
-   *Note: The `users` table will be automatically created when the server starts.*
-
-5. **Start the Server:**
+4. **Start the Server:**
    Run the backend in development mode using nodemon:
    ```bash
    npm run dev
    ```
 
-6. **View the Frontend:**
+5. **View the Frontend:**
    Open your browser and navigate to:
    ```
    http://localhost:5000
    ```
    From here, you can test the **Sign Up** and **Login** flows.
+
+## Vercel Deployment
+
+1. Import your GitHub repository to Vercel.
+2. In the Vercel project dashboard, go to **Settings > Environment Variables**.
+3. Add the `DATABASE_URL` (PostgreSQL) and `MONGO_URI` (MongoDB).
+4. Click **Deploy**. Vercel will use `vercel.json` to correctly start the Express API and serve your `public/` directory.
 
 ## API Endpoints
 
@@ -71,7 +71,7 @@ Before you begin, ensure you have the following installed:
 
 ## Technologies Used
 - Node.js & Express.js
-- MySQL & `mysql2`
+- PostgreSQL & `pg` 
 - MongoDB & Mongoose
 - JSON Web Tokens (JWT)
 - `bcryptjs` for encryption
