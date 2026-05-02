@@ -8,7 +8,7 @@ exports.register = async (req, res) => {
 
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
-    const query = "INSERT INTO users (username, password) VALUES (?, ?)";
+    const query = "INSERT INTO users (username, password) VALUES ($1, $2) RETURNING *";
     
     db.query(query, [username, hashedPassword], (err, results) => {
       if (err) {
@@ -25,13 +25,13 @@ exports.register = async (req, res) => {
 exports.login = async (req, res) => {
   const { username, password } = req.body;
 
-  const query = "SELECT * FROM users WHERE username = ?";
+  const query = "SELECT * FROM users WHERE username = $1";
   db.query(query, [username], async (err, results) => {
     if (err) return res.status(500).send("Server error");
     
-    if (results.length === 0) return res.status(400).send("User not found ❌");
+    if (results.rows.length === 0) return res.status(400).send("User not found ❌");
 
-    const user = results[0];
+    const user = results.rows[0];
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(400).send("Invalid password ❌");
 
